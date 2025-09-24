@@ -11,8 +11,49 @@
 
 package ru.evendot.task1;
 
-public class Main{
-    public static void main(String[] args) {
+import java.util.*;
 
+public class Task1 {
+
+    public static void main(String[] args) {
+        String[] words = new String[] {"Wednesday", "Powerbank", "Cup", "Paper", "Cactus", "Wall", "Window"};
+
+        GameWorker gw = new GameWorker();
+        int hiddenWordsArrayLen = gw.getWordsLength(words);
+
+        String hiddenWord = gw.chooseWord(words, hiddenWordsArrayLen);
+
+//        hiddenWord = "Wall";
+
+        int hiddenWordLen = hiddenWord.length();
+        Player player = new Player();
+
+
+        int guessProgress = 0;
+        List<Character> foundLetters = new ArrayList<>();
+
+        Scanner sc = new Scanner(System.in);
+
+//        System.out.println("DEBUG ONLY -- hiddenWord: " + hiddenWord);
+        while (player.getHp() != 0 && guessProgress != hiddenWordLen) {
+            MutableInt charFoundCount = new MutableInt(0);
+            int currHP = player.getHp();
+            System.out.println("\nHP: " + currHP);
+            System.out.println("Enter a letter: ");
+            char letter = sc.next().charAt(0);
+            if (gw.checkIfLetterInWord(hiddenWord, letter, charFoundCount)){
+                guessProgress++;
+                foundLetters.add(letter);
+            }
+            else {
+                player.setHp(currHP - 1);
+            }
+            gw.showFoundLettersInWord(hiddenWord, foundLetters);
+        }
+        if (player.getHp() == 0){
+            System.out.println("\n\nYou died!");
+        } else if (guessProgress == hiddenWordLen) {
+            System.out.println("\n\nYou won! Congratulations!!!");
+        }
     }
 }
