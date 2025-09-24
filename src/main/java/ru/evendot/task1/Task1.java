@@ -11,23 +11,22 @@
 
 package ru.evendot.task1;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Task1 {
 
     public static void main(String[] args) {
-        String[] words = new String[] {"Wednesday", "Powerbank", "Cup", "Paper", "Cactus", "Wall", "Window"};
+        String[] words = new String[]{"Wednesday", "Powerbank", "Cup", "Paper", "Cactus", "Wall", "Window"};
 
         GameWorker gw = new GameWorker();
         int hiddenWordsArrayLen = gw.getWordsLength(words);
 
         String hiddenWord = gw.chooseWord(words, hiddenWordsArrayLen);
-
-//        hiddenWord = "Wall";
-
         int hiddenWordLen = hiddenWord.length();
-        Player player = new Player();
 
+        Player player = new Player();
 
         int guessProgress = 0;
         List<Character> foundLetters = new ArrayList<>();
@@ -35,25 +34,36 @@ public class Task1 {
         Scanner sc = new Scanner(System.in);
 
 //        System.out.println("DEBUG ONLY -- hiddenWord: " + hiddenWord);
+         // Пока у пользователя есть жизни и слово не отгадано
         while (player.getHp() != 0 && guessProgress != hiddenWordLen) {
-            MutableInt charFoundCount = new MutableInt(0);
             int currHP = player.getHp();
             System.out.println("\nHP: " + currHP);
-            System.out.println("Enter a letter: ");
+            gw.showFoundLettersInWord(hiddenWord, foundLetters);
+
+            System.out.println("\nEnter a letter: ");
             char letter = sc.next().charAt(0);
-            if (gw.checkIfLetterInWord(hiddenWord, letter, charFoundCount)){
-                guessProgress++;
-                foundLetters.add(letter);
+
+            // Проверяем, была ли буква уже угадана ранее
+            if (foundLetters.contains(letter)) {
+                System.out.println("You already found this letter!");
+                continue;
             }
-            else {
+
+            // Считаем количество вхождений полученной буквы в слове
+            int lettersFoundThisTurn = gw.countCharOccurrences(hiddenWord, letter);
+
+            if (lettersFoundThisTurn > 0) {
+                guessProgress += lettersFoundThisTurn;
+                foundLetters.add(letter);
+            } else {
                 player.setHp(currHP - 1);
             }
-            gw.showFoundLettersInWord(hiddenWord, foundLetters);
         }
-        if (player.getHp() == 0){
+        if (player.getHp() == 0) {
             System.out.println("\n\nYou died!");
-        } else if (guessProgress == hiddenWordLen) {
+        } else {
             System.out.println("\n\nYou won! Congratulations!!!");
         }
+        System.out.println("The word was " + hiddenWord + ".");
     }
 }

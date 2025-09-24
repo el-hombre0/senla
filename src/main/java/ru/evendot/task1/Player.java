@@ -1,6 +1,12 @@
 package ru.evendot.task1;
 
+/**
+ * Игрок
+ */
 public class Player {
+    /**
+     * Очки здоровья игрока
+     */
     private Integer hp;
 
     public Player() {
